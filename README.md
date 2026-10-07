@@ -2,6 +2,8 @@
 
 A bar widget for Omarchy that shows today’s and overdue Apple Reminders from iCloud. Complete reminders, undo completion, and add new reminders from the popup.
 
+![Apple Reminders widget in the Omarchy bar](docs/screenshot.png)
+
 ## Requirements
 
 - Omarchy with its Quickshell plugin system.
@@ -50,3 +52,7 @@ Noninteractive helper commands report results and errors as JSON. The first list
 The Apple account password is stored in the Secret Service keyring. Account settings, session cookies, cached lists, and the virtual environment are kept under `${XDG_DATA_HOME:-~/.local/share}/omarchy-apple-reminders`, outside this repository. Override that location with `APPLE_REMINDERS_DATA`.
 
 This is an independent integration using pyicloud; it is not affiliated with Apple.
+
+## License
+
+[MIT](LICENSE) © 2026 Isaac Serrano.
