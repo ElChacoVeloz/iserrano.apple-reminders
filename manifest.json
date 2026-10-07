@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "iserrano.apple-reminders",
+  "name": "Apple Reminders",
+  "version": "1.0.0",
+  "author": "iserrano",
+  "description": "Today's Apple Reminders (iCloud) in the bar: check them off and add new ones.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Apple Reminders",
+    "description": "Today's and overdue iCloud reminders. Complete and add from the bar.",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "addListId": "",
+      "interval": 300,
+      "maxRows": 16,
+      "showNextItem": true,
+      "nextItemChars": 22,
+      "hideWhenEmpty": false
+    },
+    "schema": [
+      {
+        "key": "addListId",
+        "type": "string",
+        "label": "List id for new reminders (empty = Recordatorios/Reminders/Inbox)"
+      },
+      {
+        "key": "interval",
+        "type": "number",
+        "label": "Refresh interval (seconds)"
+      },
+      {
+        "key": "maxRows",
+        "type": "number",
+        "label": "Rows shown in the popup"
+      },
+      {
+        "key": "showNextItem",
+        "type": "boolean",
+        "label": "Show the next reminder in the bar"
+      },
+      {
+        "key": "nextItemChars",
+        "type": "number",
+        "label": "Characters of the reminder title"
+      },
+      {
+        "key": "hideWhenEmpty",
+        "type": "boolean",
+        "label": "Hide the widget when nothing is due"
+      }
+    ]
+  }
+}
