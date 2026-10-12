@@ -129,6 +129,19 @@ function overdueCount(items) {
   return n
 }
 
+// The next reminder as the bar shows it: when it is due, then the title, each
+// field joined by a dash ("12/10 - 10:00 - Pagar luz"). The date only shows for
+// reminders left over from an earlier day, the time only when they carry one,
+// and a field that is missing takes its dash with it. The title is trimmed to
+// the configured width.
+function nextItemText(item, opts) {
+  var when = []
+  if (item.overdue && item.due) when.push(shortDate(item.due))
+  if (opts.showNextTime && item.time) when.push(String(item.time))
+  var title = truncate(item.content, opts.chars)
+  return when.length > 0 ? when.join(" - ") + " - " + title : title
+}
+
 function barText(view, opts) {
   var icon = glyph.list
   if (!view.ok) return opts.vertical ? glyph.alert : icon + " " + glyph.alert
@@ -136,7 +149,7 @@ function barText(view, opts) {
   if (view.total === 0) return opts.hideWhenEmpty ? "" : (opts.vertical ? icon + "\n0" : icon + " 0")
   if (opts.vertical) return icon + "\n" + view.total
   var text = icon + " " + view.total
-  if (opts.showNextItem && view.items.length > 0) text += " · " + truncate(view.items[0].content, opts.chars)
+  if (opts.showNextItem && view.items.length > 0) text += " · " + nextItemText(view.items[0], opts)
   return text
 }
 

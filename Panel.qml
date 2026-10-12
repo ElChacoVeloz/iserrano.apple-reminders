@@ -21,6 +21,7 @@ Panel {
   property int refreshSeconds: 300
   property int maxRows: 16
   property bool showNextItem: true
+  property bool showNextTime: true
   property int nextItemChars: 22
   property bool hideWhenEmpty: false
 
@@ -36,6 +37,7 @@ Panel {
     refreshSeconds = Math.max(60, Number(setting("interval", 300)) || 300)
     maxRows = Math.max(3, Number(setting("maxRows", 16)) || 16)
     showNextItem = flagSetting("showNextItem", true)
+    showNextTime = flagSetting("showNextTime", true)
     nextItemChars = Math.max(6, Number(setting("nextItemChars", 22)) || 22)
     hideWhenEmpty = flagSetting("hideWhenEmpty", false)
   }
@@ -321,6 +323,7 @@ Panel {
     text: Model.barText(root.viewState(), {
       vertical: root.vertical,
       showNextItem: root.showNextItem,
+      showNextTime: root.showNextTime,
       chars: root.nextItemChars,
       hideWhenEmpty: root.hideWhenEmpty
     })

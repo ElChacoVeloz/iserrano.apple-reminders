@@ -29,7 +29,9 @@ Follow the interactive sign-in prompts in your terminal. Use your Apple account 
 
 Open the widget to view today’s and overdue reminders across lists, mark them complete, or create reminders. New reminders are due today by default. The input understands Spanish date expressions and some English expressions, for example `Comprar leche mañana`, `Revisar correo sin fecha`, and `Call tomorrow`.
 
-Widget settings include the destination list ID, refresh interval (default: 300 seconds), maximum rows, the next reminder title in the bar, and hiding the widget when empty. Set the destination list ID explicitly when you want new reminders to go to a specific list.
+Widget settings include the destination list ID, refresh interval (default: 300 seconds), maximum rows, the next reminder title in the bar, showing when that reminder is due next to it, and hiding the widget when empty. Set the destination list ID explicitly when you want new reminders to go to a specific list.
+
+The bar entry is the due count plus the next reminder, for example `12/10 - 10:00 - Pagar luz`. The date is shown only for reminders left over from an earlier day and the time only when the reminder carries one; a missing field takes its dash with it.
 
 The helper is also available from the terminal:
 
