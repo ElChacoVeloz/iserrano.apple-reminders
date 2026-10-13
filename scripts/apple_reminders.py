@@ -21,6 +21,7 @@ import contextlib
 import getpass
 import json
 import os
+import re
 import shutil
 import sys
 from datetime import date, datetime, time, timedelta, timezone
@@ -97,6 +98,39 @@ def get_password(apple_id):
         raise HelperError("keyring", err)
 
 
+# --- colors ---------------------------------------------------------------
+
+def color_hex(value):
+    """The list color as iCloud stores it (a dictionary with daHexString, or with
+    red/green/blue channels in 0..1), reduced to #rrggbb so the bar and the popup
+    can paint it as it is."""
+    data = value
+    if not data:
+        return ""
+    if isinstance(data, str):
+        text = data.strip()
+        if text.startswith("{"):
+            try:
+                data = json.loads(text)
+            except ValueError:
+                return ""
+        else:
+            return text.lower() if re.match(r"^#[0-9a-fA-F]{6}$", text) else ""
+    if not isinstance(data, dict):
+        return ""
+    hexa = str(data.get("daHexString") or data.get("hex") or "").strip()
+    if re.match(r"^#[0-9a-fA-F]{6}$", hexa):
+        return hexa.lower()
+    channels = [data.get(channel) for channel in ("red", "green", "blue")]
+    if any(channel is None for channel in channels):
+        return ""
+    try:
+        red, green, blue = (float(channel) for channel in channels)
+    except (TypeError, ValueError):
+        return ""
+    return "#%02x%02x%02x" % tuple(min(255, max(0, int(round(channel * 255)))) for channel in (red, green, blue))
+
+
 # --- iCloud ---------------------------------------------------------------
 
 def connect():
@@ -170,7 +204,7 @@ def sync_lists(svc, budget=None, progress=None):
                         cache["lists"].pop(lst.id, None)
                     else:
                         cache["lists"][lst.id] = {"id": lst.id, "title": lst.title,
-                                                  "color": lst.color or "", "isGroup": lst.is_group}
+                                                  "color": color_hex(lst.color), "isGroup": lst.is_group}
             cache["token"] = zone.syncToken or cache["token"]
             more = more or bool(zone.moreComing)
         pages += 1
@@ -225,7 +259,7 @@ def shape(reminder, lst, today):
         "notes": (reminder.desc or "")[:300],
         "listId": lst.id,
         "list": lst.title,
-        "color": lst.color or "",
+        "color": color_hex(lst.color),
         "allDay": bool(reminder.all_day),
         "due": day.isoformat(),
         "time": "" if reminder.all_day or not local else local.strftime("%H:%M"),
@@ -265,7 +299,7 @@ def cmd_fetch(_argv):
 
 def cmd_lists(_argv):
     svc = connect().reminders
-    out({"ok": True, "lists": [{"id": lst.id, "title": lst.title, "color": lst.color or ""}
+    out({"ok": True, "lists": [{"id": lst.id, "title": lst.title, "color": color_hex(lst.color)}
                                for lst in usable_lists(svc, budget=40)]})
 
 

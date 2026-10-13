@@ -198,3 +198,73 @@ function errorMessage(error) {
   default: return error ? "Error: " + error : "Algo salió mal"
   }
 }
+
+// ---- the bar -------------------------------------------------------------
+// The bar is painted by hand — glyph, one dot per list, the count and the
+// reminder that comes next — with the same shape as the calendar widget, so the
+// two read as siblings even though one talks about events and the other about
+// to-dos.
+
+// One dot per list that has something today, in the color Apple gave that list
+// (the same treatment the calendar gives each account). The cap keeps the bar
+// from filling up with dots when there are many lists.
+function listDots(items, cap) {
+  var out = []
+  var limit = Math.max(1, Number(cap) || 4)
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i]
+    var id = String(item.listId || item.list || "")
+    if (id === "") continue
+    var known = null
+    for (var j = 0; j < out.length; j++) if (out[j].id === id) known = out[j]
+    if (known) { known.count++; continue }
+    if (out.length >= limit) continue
+    out.push({ id: id, list: String(item.list || ""), color: String(item.color || ""), count: 1 })
+  }
+  return out
+}
+
+// The glyph: the list when there is a session, the alert when there is none.
+function barGlyph(view) {
+  return view && view.ok ? glyph.list : glyph.alert
+}
+
+// The count: an ellipsis while the first load runs, the total after that. Empty
+// without a session, because then the glyph is the one that talks.
+function barCount(view) {
+  if (!view || !view.ok) return ""
+  if (view.loading && view.total === 0 && !view.settled) return "…"
+  return String(view.total)
+}
+
+// The next reminder, in the usual shape ("12/10 - 10:00 - Pay the bill"). Empty
+// when there is nothing to show.
+function barNext(view, opts) {
+  if (!view || !view.ok || view.total === 0 || view.items.length === 0) return ""
+  if (opts && opts.showNextItem === false) return ""
+  return nextItemText(view.items[0], opts || {})
+}
+
+// Is anything overdue? Then the count wears the urgent color — the same warning
+// the calendar gives when a meeting is about to start.
+function barUrgent(view) {
+  return Boolean(view && view.ok && view.total > 0 && overdueCount(view.items) > 0)
+}
+
+if (typeof module !== "undefined") {
+  module.exports = {
+    glyph: glyph,
+    truncate: truncate,
+    nextItemText: nextItemText,
+    barText: barText,
+    tooltip: tooltip,
+    overdueCount: overdueCount,
+    errorMessage: errorMessage,
+    meta: meta,
+    listDots: listDots,
+    barGlyph: barGlyph,
+    barCount: barCount,
+    barNext: barNext,
+    barUrgent: barUrgent
+  }
+}

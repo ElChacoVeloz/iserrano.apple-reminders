@@ -320,19 +320,108 @@ Panel {
 
     bar: root.bar
     fontFamily: root.fontFamily
-    text: Model.barText(root.viewState(), {
-      vertical: root.vertical,
+    // The bar is painted by hand — glyph, one dot per list that has something
+    // today, the count and the next reminder — so it reads like the calendar
+    // widget, which does the same with one dot per account. A vertical bar keeps
+    // the plain text: a row does not fit there.
+    text: root.vertical ? Model.barText(root.viewState(), {
+      vertical: true,
       showNextItem: root.showNextItem,
       showNextTime: root.showNextTime,
       chars: root.nextItemChars,
       hideWhenEmpty: root.hideWhenEmpty
-    })
+    }) : ""
+    labelVisible: root.vertical
+    hasVisualContent: true
+    fixedWidth: root.vertical ? -1 : contentRow.implicitWidth + Style.space(18)
+    horizontalMargin: 8.75
+    verticalPadding: 8.75
     tooltipText: Model.tooltip(root.viewState())
+
+    readonly property var dots: root.ok ? Model.listDots(root.items, 4) : []
+    readonly property var view: root.viewState()
+    readonly property bool shows: root.vertical || !root.hideWhenEmpty || !root.ok
+      || root.items.length > 0 || (root.loading && !root.settled)
 
     onPressed: function(mouseButton) {
       if (mouseButton === Qt.RightButton) root.openWeb()
       else if (mouseButton === Qt.MiddleButton) root.refresh()
       else root.toggle()
+    }
+
+    Row {
+      id: contentRow
+
+      visible: !root.vertical && button.shows
+      anchors.centerIn: parent
+      spacing: Style.space(4)
+
+      Text {
+        id: barGlyphLabel
+
+        anchors.verticalCenter: parent.verticalCenter
+        text: Model.barGlyph(button.view)
+        color: root.ok ? Qt.darker(button.foreground, 1.5) : root.urgent
+        font.family: button.fontFamily
+        font.pixelSize: button.fontSize
+        renderType: Text.NativeRendering
+      }
+
+      Row {
+        id: barDotsRow
+
+        visible: root.ok && button.dots.length > 0
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Style.space(2)
+
+        Repeater {
+          model: button.dots
+
+          Rectangle {
+            required property var modelData
+
+            anchors.verticalCenter: parent.verticalCenter
+            width: Style.space(4)
+            height: width
+            radius: width / 2
+            // The color Apple gave that list; without one, a dimmed dot so the
+            // list still counts.
+            color: modelData.color !== "" ? modelData.color : Util.alpha(button.foreground, 0.55)
+          }
+        }
+      }
+
+      Text {
+        id: barCountLabel
+
+        anchors.verticalCenter: parent.verticalCenter
+        visible: text !== ""
+        text: Model.barCount(button.view)
+        // The count wears the urgent color when something is overdue: the same
+        // warning the calendar gives when a meeting is due now.
+        color: Model.barUrgent(button.view) ? root.urgent : Qt.darker(button.foreground, 1.4)
+        font.family: button.fontFamily
+        font.pixelSize: Style.font.bodySmall
+        renderType: Text.NativeRendering
+      }
+
+      Text {
+        id: barNextLabel
+
+        readonly property string nextText: Model.barNext(button.view, {
+          showNextItem: root.showNextItem,
+          showNextTime: root.showNextTime,
+          chars: root.nextItemChars
+        })
+
+        anchors.verticalCenter: parent.verticalCenter
+        visible: nextText !== ""
+        text: nextText === "" ? "" : "· " + nextText
+        color: Qt.darker(button.foreground, 1.6)
+        font.family: button.fontFamily
+        font.pixelSize: Style.font.bodySmall
+        renderType: Text.NativeRendering
+      }
     }
   }
 
