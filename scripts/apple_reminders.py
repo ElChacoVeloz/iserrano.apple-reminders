@@ -273,7 +273,62 @@ def shape(reminder, lst, today):
     }
 
 
-def cmd_fetch(_argv):
+# --- sample data -----------------------------------------------------------
+# Behind `fetch --demo`: a canned answer with the same shape as a real one, for
+# previews, theming and screenshots. The widget's interface is in Spanish, so the
+# sample reminders are too. It never touches iCloud.
+
+DEMO_LISTS = [
+    {"id": "demo-reminders", "title": "Recordatorios", "color": "#ffcc00"},
+    {"id": "demo-home", "title": "Casa", "color": "#3366ff"},
+    {"id": "demo-work", "title": "Trabajo", "color": "#12a594"},
+]
+
+# (list id, title, days from today, time) — an empty time means an all-day one.
+DEMO_ROWS = [
+    ("demo-reminders", "Pagar la luz", -1, "10:00"),
+    ("demo-home", "Sacar la basura", 0, "20:00"),
+    ("demo-reminders", "Comprar leche", 0, "18:30"),
+    ("demo-work", "Revisar el reporte", 0, ""),
+]
+
+
+def demo_payload():
+    today = date.today()
+    items = []
+    for index, (list_id, title, offset, time_text) in enumerate(DEMO_ROWS):
+        lst = next(item for item in DEMO_LISTS if item["id"] == list_id)
+        day = today + timedelta(days=offset)
+        overdue = day < today
+        items.append({
+            "id": "demo-%d" % (index + 1),
+            "content": title,
+            "notes": "",
+            "listId": lst["id"],
+            "list": lst["title"],
+            "color": lst["color"],
+            "allDay": time_text == "",
+            "due": day.isoformat(),
+            "time": time_text,
+            "overdue": overdue,
+            "flagged": False,
+            "priority": 0,
+            "section": "Vencidos" if overdue else "Hoy",
+        })
+    items.sort(key=lambda item: (0 if item["overdue"] else 1, item["due"], item["time"],
+                                 item["content"].lower()))
+    if not any(item["overdue"] for item in items):
+        for item in items:
+            item["section"] = ""
+    return {"ok": True, "items": items, "total": len(items),
+            "lists": [{"id": lst["id"], "title": lst["title"]} for lst in DEMO_LISTS],
+            "at": int(datetime.now().timestamp()), "demo": True}
+
+
+def cmd_fetch(argv):
+    if "--demo" in argv:
+        out(demo_payload())
+        return
     api = connect()
     svc = api.reminders
     today = date.today()

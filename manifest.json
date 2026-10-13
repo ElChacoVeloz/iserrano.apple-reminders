@@ -24,7 +24,8 @@
       "showNextItem": true,
       "showNextTime": true,
       "nextItemChars": 22,
-      "hideWhenEmpty": false
+      "hideWhenEmpty": false,
+      "demo": false
     },
     "schema": [
       {
@@ -61,6 +62,11 @@
         "key": "hideWhenEmpty",
         "type": "boolean",
         "label": "Hide the widget when nothing is due"
+      },
+      {
+        "key": "demo",
+        "type": "boolean",
+        "label": "Preview with sample reminders instead of iCloud (for screenshots and themes)"
       }
     ]
   }

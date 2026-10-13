@@ -24,6 +24,7 @@ Panel {
   property bool showNextTime: true
   property int nextItemChars: 22
   property bool hideWhenEmpty: false
+  property bool demo: false
 
   function flagSetting(name, fallback) {
     var value = setting(name, fallback)
@@ -40,6 +41,7 @@ Panel {
     showNextTime = flagSetting("showNextTime", true)
     nextItemChars = Math.max(6, Number(setting("nextItemChars", 22)) || 22)
     hideWhenEmpty = flagSetting("hideWhenEmpty", false)
+    demo = flagSetting("demo", false)
   }
 
   readonly property string helper: String(Qt.resolvedUrl("scripts/apple-reminders")).replace(/^file:\/\//, "")
@@ -114,7 +116,7 @@ Panel {
   function refresh() {
     if (fetchProc.running) return
     loading = true
-    fetchProc.command = [root.helper, "fetch"]
+    fetchProc.command = root.demo ? [root.helper, "fetch", "--demo"] : [root.helper, "fetch"]
     fetchProc.running = true
   }
 
@@ -148,6 +150,10 @@ Panel {
   }
 
   function enqueue(job) {
+    if (demo) {
+      note("Modo demo: recordatorios de ejemplo, no toca iCloud", false)
+      return
+    }
     jobs = jobs.concat([job])
     pump()
   }

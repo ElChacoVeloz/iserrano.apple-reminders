@@ -29,7 +29,7 @@ Follow the interactive sign-in prompts in your terminal. Use your Apple account 
 
 Open the widget to view today’s and overdue reminders across lists, mark them complete, or create reminders. New reminders are due today by default. The input understands Spanish date expressions and some English expressions, for example `Comprar leche mañana`, `Revisar correo sin fecha`, and `Call tomorrow`.
 
-Widget settings include the destination list ID, refresh interval (default: 300 seconds), maximum rows, the next reminder title in the bar, showing when that reminder is due next to it, and hiding the widget when empty. Set the destination list ID explicitly when you want new reminders to go to a specific list.
+Widget settings include the destination list ID, refresh interval (default: 300 seconds), maximum rows, the next reminder title in the bar, showing when that reminder is due next to it, hiding the widget when empty, and a demo switch that answers with a handful of sample reminders instead of iCloud — that is what the screenshot above shows. While the demo is on, the rows and the input do not send anything. Set the destination list ID explicitly when you want new reminders to go to a specific list.
 
 The bar entry is painted by hand and follows the same shape as the calendar widget, so the two read alike: a dim list glyph, one dot per list that has something due today in that list's own color (the one iCloud stores), the open count, and the reminder that comes next — `󰝖 ●● 2 · 19:30 - Buy milk`. The next reminder shows only when there is one, the date only for reminders left over from an earlier day and the time only when the reminder carries one, so a missing field takes its dash with it. When something is overdue, the count turns the urgent color.
 
